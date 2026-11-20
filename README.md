@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🛡️ BhashaShield AI
 
 > **A Research-Oriented Multilingual AI Safety Evaluation, Benchmarking & Defense Platform**  
@@ -188,3 +189,7 @@ docker-compose up --build
 - **Parametrized Queries:** SQL operations utilize SQLAlchemy async ORM with parameterized binding.
 - **Ethical Testing Probes:** Probes assess refusal boundaries rather than weaponized exploit payloads.
 - **Responsive 100vh Viewport:** Layout enforces zero unwanted page-level scrollbars with internal scroll panes.
+=======
+# regional_language_safety
+A multilingual AI safety platform that evaluates LLM vulnerabilities across regional Indian languages through text and voice-based testing, focusing on Kannada, Kanglish, and English.
+>>>>>>> 6c6bc0556b0724496d55b5ed54d691759d78b148
