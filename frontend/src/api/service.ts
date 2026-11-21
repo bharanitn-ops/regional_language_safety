@@ -104,6 +104,26 @@ export const apiService = {
     return res.data;
   },
 
+  async evaluatePairedPrompt(payload: {
+    prompt: string;
+    target_model?: string;
+    forced_modality?: string | null;
+    temperature?: number;
+  }): Promise<any> {
+    const res = await apiClient.post<any>('/api/v1/evaluate/paired', payload);
+    return res.data;
+  },
+
+  async getRecentEvaluations(limit: number = 30): Promise<any[]> {
+    const res = await apiClient.get<any[]>(`/api/v1/evaluate/recent?limit=${limit}`);
+    return res.data;
+  },
+
+  async getProtectionMetrics(limit: number = 300, period: string = '30D'): Promise<any> {
+    const res = await apiClient.get<any>(`/api/v1/evaluate/protection-metrics?limit=${limit}&period=${period}`);
+    return res.data;
+  },
+
   async runBatchEvaluation(payload: {
     target_model: string;
     enable_bilingual_guard: boolean;
@@ -226,5 +246,59 @@ export const apiService = {
 
   getDatasetCSVExportUrl(datasetId: string): string {
     return `/api/v1/datasets/${datasetId}/export/csv`;
+  },
+
+  // Groq Real-Time AI API Methods
+  async getGroqStatus(): Promise<any> {
+    const res = await apiClient.get<any>('/api/v1/groq/status');
+    return res.data;
+  },
+
+  async getGroqModels(): Promise<any[]> {
+    const res = await apiClient.get<any[]>('/api/v1/groq/models');
+    return res.data;
+  },
+
+  async groqChat(payload: {
+    messages: Array<{ role: string; content: string }>;
+    model?: string;
+    temperature?: number;
+    max_tokens?: number;
+    system_prompt?: string;
+  }): Promise<any> {
+    const res = await apiClient.post<any>('/api/v1/groq/chat', payload);
+    return res.data;
+  },
+
+  async groqEvaluate(payload: {
+    prompt: string;
+    model?: string;
+    enable_guard?: boolean;
+    forced_modality?: string | null;
+    temperature?: number;
+    max_tokens?: number;
+    save_to_db?: boolean;
+  }): Promise<EvaluationResult> {
+    const res = await apiClient.post<EvaluationResult>('/api/v1/groq/evaluate', payload);
+    return res.data;
+  },
+
+  async groqGuard(payload: {
+    prompt: string;
+    model?: string;
+    forced_modality?: string | null;
+    temperature?: number;
+    max_tokens?: number;
+  }): Promise<any> {
+    const res = await apiClient.post<any>('/api/v1/groq/guard', payload);
+    return res.data;
+  },
+
+  async groqClassify(payload: {
+    prompt: string;
+    model?: string;
+  }): Promise<any> {
+    const res = await apiClient.post<any>('/api/v1/groq/classify', payload);
+    return res.data;
   },
 };

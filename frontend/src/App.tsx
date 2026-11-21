@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LanguageProvider } from './context/LanguageContext';
 import { IndicSidebar } from './components/layout/IndicSidebar';
 import { IndicDashboardPage } from './pages/indic/IndicDashboardPage';
 import { IndicReportsPage } from './pages/indic/IndicReportsPage';
@@ -22,7 +23,7 @@ import { apiService } from './api/service';
 import { HealthResponse } from './types';
 import { ToastProvider } from './components/common/Toast';
 import { NewExperimentModal } from './components/modals/NewExperimentModal';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Menu } from 'lucide-react';
 
 export const AppContent: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
@@ -31,6 +32,7 @@ export const AppContent: React.FC = () => {
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [newExpModalOpen, setNewExpModalOpen] = useState<boolean>(false);
   const [presentationOpen, setPresentationOpen] = useState<boolean>(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   const fetchHealth = async () => {
     try {
@@ -70,12 +72,38 @@ export const AppContent: React.FC = () => {
       {/* 1. IndicShield Shared Sidebar */}
       <IndicSidebar
         currentTab={currentTab}
-        onSelectTab={navigateTo}
+        onSelectTab={(tab) => {
+          navigateTo(tab);
+          setMobileNavOpen(false);
+        }}
         onOpenPresentation={() => setPresentationOpen(true)}
+        mobileOpen={mobileNavOpen}
+        onCloseMobile={() => setMobileNavOpen(false)}
       />
 
-      {/* 2. Main Content Viewport */}
-      <main className="flex-1 min-h-0 min-w-0 overflow-y-auto bg-[#F7F8FF]">
+      {/* Main Viewport Container */}
+      <div className="flex-1 min-h-0 min-w-0 flex flex-col bg-[#F7F8FF]">
+        {/* Mobile Header Bar */}
+        <header className="md:hidden flex items-center justify-between px-4 py-2.5 bg-white border-b border-[#D8E1FF] z-20 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              className="p-1.5 rounded-xl border border-[#D8E1FF] text-[#1769F5] hover:bg-blue-50 transition-colors cursor-pointer"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <span className="font-extrabold text-[#101A9B] text-sm tracking-tight">
+              IndicShield AI
+            </span>
+          </div>
+          <span className="text-[11px] font-bold text-[#873BEE] capitalize px-2.5 py-0.5 rounded-full bg-purple-50 border border-purple-100">
+            {currentTab}
+          </span>
+        </header>
+
+        {/* 2. Main Content Viewport */}
+        <main className="flex-1 min-h-0 min-w-0 overflow-y-auto bg-[#F7F8FF]">
         {/* Core Screen 4: Dashboard */}
         {(currentTab === 'dashboard' || currentTab === 'overview') && (
           <IndicDashboardPage onNavigate={navigateTo} />
@@ -114,9 +142,6 @@ export const AppContent: React.FC = () => {
                 <ArrowLeft className="h-5 w-5" />
               </button>
               <div>
-                <span className="text-xs font-bold text-[#873BEE] uppercase tracking-wider">
-                  Research Suite
-                </span>
                 <h2 className="text-lg font-bold text-[#101A9B] capitalize">
                   {currentTab.replace('-', ' ')}
                 </h2>
@@ -140,6 +165,7 @@ export const AppContent: React.FC = () => {
           </div>
         )}
       </main>
+      </div>
 
       {/* Global Modals */}
       <NewExperimentModal
@@ -162,9 +188,11 @@ export const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <ToastProvider>
-      <AppContent />
-    </ToastProvider>
+    <LanguageProvider>
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
+    </LanguageProvider>
   );
 };
 

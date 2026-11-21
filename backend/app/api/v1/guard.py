@@ -134,11 +134,25 @@ async def _process_guard_evaluation(payload: GuardInspectRequest) -> GuardInspec
     defense_verdict = "PASSED_DIRECT"
     explanation = ""
 
-    if decision == "BLOCK":
+    if decision == "SUPPORT":
+        # Empathetic crisis support protocol for self-harm
+        guarded_output = (
+            "ನಿಮ್ಮ ಸುರಕ್ಷತೆ ಮತ್ತು ಯೋಗಕ್ಷೇಮ ನಮಗೆ ಅತ್ಯಂತ ಮುಖ್ಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಒಬ್ಬಂಟಿಯಾಗಿ ಇರಬೇಡಿ. "
+            "ತಕ್ಷಣವೇ ಉಚಿತ, ಗೌಪ್ಯ ಮತ್ತು 24/7 ಮಾನಸಿಕ ಆರೋಗ್ಯ ಸಹಾಯವಾಣಿಗೆ ಕರೆ ಮಾಡಿ:\n"
+            "• Tele-MANAS (ಭಾರತ ಸರ್ಕಾರ): 14416 ಅಥವಾ 1800-891-4416 (24/7 ಉಚಿತ)\n"
+            "• AASRA Helpline: +91-9820466726\n"
+            "(If you are going through distress or having thoughts of self-harm, please reach out to Tele-MANAS at 14416 or AASRA at +91-9820466726 for free, confidential, 24/7 support.)"
+        )
+        defense_verdict = "DEFENSE_ACTIVE"
+        explanation = f"Crisis care protocol active in {modality}: Providing confidential mental health crisis support resources."
+        output_verification_status = "CRISIS_SUPPORT_PROVIDED"
+        guarded_lat = round((time.perf_counter() - t0_guard) * 1000, 2)
+
+    elif decision == "BLOCK":
         # Pre-generation refusal
         guarded_output = (
-            "ಕ್ಷಮಿಸಿ, ಹಾನಿಕಾರಕ ಅಥವಾ ವಂಚಕ ಚಟುವಟಿಕೆಗಳಿಗೆ ಸಹಾಯ ಮಾಡುವ ಮಾಹಿತಿಯನ್ನು ನಾನು ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ. "
-            "(I apologize, I cannot provide assistance or instructions for malicious cyber, exploit, or phishing requests in any language.)"
+            "ಕ್ಷಮಿಸಿ, ಹಾನಿಕಾರಕ, ಹಿಂಸಾತ್ಮಕ ಅಥವಾ ವಂಚಕ ಚಟುವಟಿಕೆಗಳಿಗೆ ಸಹಾಯ ಮಾಡುವ ಮಾಹಿತಿಯನ್ನು ನಾನು ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ. "
+            "(I apologize, I cannot provide assistance or instructions for physical violence, cyber exploit, or phishing requests in any language.)"
         )
         defense_verdict = "DEFENSE_ACTIVE"
         explanation = f"Language-aware guard detected high-risk probe in {modality} and successfully prevented unsafe cross-lingual compliance."
@@ -388,7 +402,22 @@ async def get_guard_demo_workflow(payload: BsgWorkflowDemoRequest):
     defense_verdict = "PASSED_DIRECT"
     explanation = ""
 
-    if decision == "BLOCK":
+    if decision == "SUPPORT":
+        guarded_output = (
+            "ನಿಮ್ಮ ಸುರಕ್ಷತೆ ಮತ್ತು ಯೋಗಕ್ಷೇಮ ನಮಗೆ ಅತ್ಯಂತ ಮುಖ್ಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಒಬ್ಬಂಟಿಯಾಗಿ ಇರಬೇಡಿ. "
+            "ತಕ್ಷಣವೇ ಉಚಿತ, ಗೌಪ್ಯ ಮತ್ತು 24/7 ಮಾನಸಿಕ ಆರೋಗ್ಯ ಸಹಾಯವಾಣಿಗೆ ಕರೆ ಮಾಡಿ:\n"
+            "• Tele-MANAS (ಭಾರತ ಸರ್ಕಾರ): 14416 ಅಥವಾ 1800-891-4416 (24/7 ಉಚಿತ)\n"
+            "• AASRA Helpline: +91-9820466726\n"
+            "(If you are going through distress or having thoughts of self-harm, please reach out to Tele-MANAS at 14416 or AASRA at +91-9820466726.)"
+        )
+        defense_verdict = "DEFENSE_ACTIVE"
+        explanation = f"Crisis care protocol active in {modality}: Providing confidential mental health crisis support resources."
+        output_verification_status = "CRISIS_SUPPORT_PROVIDED"
+        guarded_lat = round((time.perf_counter() - t0_guard) * 1000, 2)
+        guarded_safety_status = "CRISIS_SUPPORT_PROVIDED"
+        baseline_safety_status = "CRISIS_SENSITIVE"
+
+    elif decision == "BLOCK":
         # Pre-generation refusal
         guarded_output = (
             "ಕ್ಷಮಿಸಿ, ಹಾನಿಕಾರಕ ಅಥವಾ ವಂಚಕ ಚಟುವಟಿಕೆಗಳಿಗೆ ಸಹಾಯ ಮಾಡುವ ಮಾಹಿತಿಯನ್ನು ನಾನು ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ. "

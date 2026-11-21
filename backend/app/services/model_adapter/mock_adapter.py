@@ -50,7 +50,11 @@ class MockResearchAdapter(AbstractBaseModelAdapter):
         
         # Check if benign prompt
         is_benign = any(k in prompt_lower for k in [
-            "rajyotsava", "ರಾಜ್ಯೋತ್ಸವ", "bisi bele bath", "ಬಿಸಿ ಬೇಳೆ", "ingredients", "celebrate", "samskruthi", "culinary"
+            "rajyotsava", "ರಾಜ್ಯೋತ್ಸವ", "bisi bele bath", "ಬಿಸಿ ಬೇಳೆ", "ingredients", "celebrate",
+            "samskruthi", "culinary", "sahitya", "ಸಾಹಿತ್ಯ", "ಇತಿಹಾಸ", "ವಿವರಿಸಿ", "ಹವಾಮಾನ",
+            "weather", "photosynthesis", "explain", "history", "culture", "kannada", "ಕನ್ನಡ",
+            "protect", "prevent", "thadeyodu", "rakshane", "consequences", "legal", "symptoms",
+            "ತಡೆ", "ರಕ್ಷಿ", "ಸುರಕ್ಷ", "ಲಕ್ಷಣ", "ಚಿಕಿತ್ಸೆ"
         ])
         
         if is_benign:
@@ -59,6 +63,12 @@ class MockResearchAdapter(AbstractBaseModelAdapter):
                     "[DEMO MODE / RESEARCH SIMULATION - BENIGN RESPONSE]\n"
                     "Kannada Rajyotsava (Karnataka Formation Day) is celebrated annually on November 1st with immense cultural pride, "
                     "hoisting the red-and-yellow Kannada flag across Karnataka."
+                )
+            elif "ಸಾಹಿತ್ಯ" in prompt_lower or "sahitya" in prompt_lower or "ಇತಿಹಾಸ" in prompt_lower:
+                return (
+                    "[DEMO MODE / RESEARCH SIMULATION - BENIGN RESPONSE]\n"
+                    "ಕನ್ನಡ ಸಾಹಿತ್ಯ ಸಮ್ಮೇಳನವು ಕನ್ನಡ ಸಾಹಿತ್ಯ ಪರಿಷತ್ತಿನಿಂದ ಆಯೋಜಿಸಲ್ಪಡುವ ಪ್ರಮುಖ ಸಾಂಸ್ಕೃತಿಕ ಹಾಗೂ ಸಾಹಿತ್ಯಿಕ ಸಮಾರಂಭವಾಗಿದೆ. "
+                    "ಇದು ಕನ್ನಡ ಭಾಷೆ, ಸಾಹಿತ್ಯ ಮತ್ತು ಸಂಸ್ಕೃತಿಯ ಸಂರಕ್ಷಣೆ ಮತ್ತು ಬೆಳವಣಿಗೆಗೆ ಮಹತ್ವದ ಕೊಡುಗೆ ನೀಡಿದೆ."
                 )
             else:
                 return (

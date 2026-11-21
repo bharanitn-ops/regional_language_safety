@@ -8,6 +8,7 @@ from app.api.v1.guard import router as guard_router
 from app.api.v1.reports import router as reports_router
 from app.api.v1.models import router as models_router
 from app.api.v1.metrics import router as metrics_router
+from app.api.v1.groq_ai import router as groq_router
 
 api_router = APIRouter()
 api_router.include_router(health_router)
@@ -19,3 +20,4 @@ api_router.include_router(experiments_router)
 api_router.include_router(guard_router)
 api_router.include_router(reports_router)
 api_router.include_router(metrics_router)
+api_router.include_router(groq_router)

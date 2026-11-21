@@ -4,10 +4,51 @@ from app.services.model_adapter.base import AbstractBaseModelAdapter
 from app.services.model_adapter.mock_adapter import MockResearchAdapter
 from app.services.model_adapter.hosted_adapter import HostedOpenWeightAdapter
 from app.services.model_adapter.local_adapter import LocalOpenWeightAdapter
+from app.services.model_adapter.groq_adapter import GroqAdapter, GROQ_MODELS
 from app.core.config import settings
 
 # Pre-configured open-weight model descriptors for research benchmarks
 DEFAULT_MODELS_METADATA = {
+    "qwen/qwen3.8-27b": {
+        "name": "Qwen 3.8 27B (Groq Real-Time AI)",
+        "identifier": "qwen/qwen3.8-27b",
+        "provider": "Groq",
+        "parameters": "27B",
+        "context_window": "32768",
+        "supported_languages": ["English", "Kannada Native (ಕನ್ನಡ)", "Romanized Kannada", "Kanglish"],
+        "quantization": "none",
+        "api_key_env": "GROQ_API_KEY"
+    },
+    "openai/gpt-oss-120b": {
+        "name": "GPT-OSS 120B (Groq Real-Time Reasoning)",
+        "identifier": "openai/gpt-oss-120b",
+        "provider": "Groq",
+        "parameters": "120B",
+        "context_window": "8192",
+        "supported_languages": ["English", "Kannada Native (ಕನ್ನಡ)", "Romanized Kannada", "Kanglish"],
+        "quantization": "none",
+        "api_key_env": "GROQ_API_KEY"
+    },
+    "openai/gpt-oss-safeguard-20b": {
+        "name": "GPT-OSS Safeguard 20B (Groq AI Alignment Guard)",
+        "identifier": "openai/gpt-oss-safeguard-20b",
+        "provider": "Groq",
+        "parameters": "20B",
+        "context_window": "8192",
+        "supported_languages": ["English", "Kannada Native (ಕನ್ನಡ)", "Romanized Kannada", "Kanglish"],
+        "quantization": "none",
+        "api_key_env": "GROQ_API_KEY"
+    },
+    "allam-2-7b": {
+        "name": "ALLaM 2 7B (Groq Real-Time AI)",
+        "identifier": "allam-2-7b",
+        "provider": "Groq",
+        "parameters": "7B",
+        "context_window": "8192",
+        "supported_languages": ["English", "Kannada Native (ಕನ್ನಡ)", "Romanized Kannada", "Kanglish"],
+        "quantization": "none",
+        "api_key_env": "GROQ_API_KEY"
+    },
     "llama3-8b-instruct": {
         "name": "Llama 3 8B Instruct (Meta)",
         "identifier": "meta-llama/Meta-Llama-3-8B-Instruct",
@@ -85,7 +126,23 @@ class ModelAdapterFactory:
                 config=merged_config
             )
 
-        # 2. Local Transformers adapter
+        # 2. Groq LPU Real-time AI adapter
+        groq_key = os.getenv("GROQ_API_KEY") or settings.GROQ_API_KEY
+        clean_model_id = model_id.replace("groq/", "")
+        if (
+            provider == "Groq"
+            or model_id.startswith("groq/")
+            or clean_model_id in GROQ_MODELS
+            or (groq_key and "PASTE" not in groq_key and provider == "Hosted-OpenWeight" and not os.getenv("HF_TOKEN"))
+        ):
+            target_groq_model = clean_model_id if clean_model_id in GROQ_MODELS else "qwen/qwen3.8-27b"
+            return GroqAdapter(
+                model_id=target_groq_model,
+                model_name=model_name,
+                config=merged_config
+            )
+
+        # 3. Local Transformers adapter
         if provider in ["Local-Transformers", "Local"]:
             return LocalOpenWeightAdapter(
                 model_id=merged_config.get("identifier", model_id),
@@ -93,12 +150,10 @@ class ModelAdapterFactory:
                 config=merged_config
             )
 
-        # 3. Hosted open-weight adapter (HuggingFace Inference API / Ollama / vLLM)
+        # 4. Hosted open-weight adapter (HuggingFace Inference API / Ollama / vLLM)
         hf_token = os.getenv("HF_TOKEN") or os.getenv("OPENWEIGHT_API_KEY")
         endpoint_url = merged_config.get("endpoint_url") or os.getenv("INFERENCE_ENDPOINT_URL")
 
-        # In demo mode, if no live endpoint credentials configured, fallback gracefully to mock adapter
-        # while explicitly noting demo simulation
         if settings.DEMO_MODE and not hf_token and not endpoint_url:
             return MockResearchAdapter(
                 model_id=model_id,
